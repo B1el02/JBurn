@@ -1,0 +1,312 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="style.css" />
+    <title>Js Burn Rate - Pessoal</title>
+  </head>
+  <body id="corpo">
+    <!-- Formulário inicial -->
+    <section id="tela-coleta" aria-label="Formulário inicial">
+      <h1>Organização Financeira Pessoal</h1>
+
+      <section class="passo-formulario" id="passo-1" aria-label="Passo 1">
+        <h2>Passo 1: Seu Dinheiro Hoje</h2>
+        <p>Dinheiro na Conta Corrente / Pix (Disponível agora):</p>
+        <input type="number" id="saldoAtual" placeholder="Ex: 2500" />
+
+        <p>Reserva de Emergência / Guardado (Poupança/Investido):</p>
+        <input type="number" id="capitalGiro" placeholder="Ex: 5000" />
+
+        <p>Quanto sobrou na conta no mês passado? (Estimativa):</p>
+        <input type="number" id="hist1" placeholder="Ex: 300" />
+
+        <p>Quanto sobrou há 2 meses?:</p>
+        <input type="number" id="hist2" placeholder="Ex: 150" /><br /><br />
+
+        <button type="button" onclick="proximoPasso(2)">Avançar</button>
+      </section>
+
+      <section
+        class="passo-formulario"
+        id="passo-2"
+        style="display: none"
+        aria-label="Passo 2"
+      >
+        <h2>Passo 2: Suas Entradas</h2>
+        <p>Seu Salário Líquido (Ou renda fixa mensal):</p>
+        <input type="number" id="mrr" placeholder="Ex: 3500" />
+
+        <p>Renda Extra / Bicos / Freelas (Média por mês):</p>
+        <input type="number" id="receitaPontual" placeholder="Ex: 600" />
+
+        <p>Ajuda externa / Outros recebidos no mês:</p>
+        <input type="number" id="aportes" placeholder="Ex: 0" /><br /><br />
+
+        <button type="button" onclick="passoAnterior(1)">Voltar</button>
+        <button type="button" onclick="proximoPasso(3)">Avançar</button>
+      </section>
+
+      <section
+        class="passo-formulario"
+        id="passo-3"
+        style="display: none"
+        aria-label="Passo 3"
+      >
+        <h2>Passo 3: Suas Despesas</h2>
+        <p>Custos Fixos (Aluguel, Luz, Internet, Água, Mercado):</p>
+        <input type="number" id="payroll" placeholder="Ex: 1800" />
+
+        <p>Gasto com Assinaturas (Netflix, Spotify, Academia, Apps):</p>
+        <input type="number" id="saas" placeholder="Ex: 120" />
+
+        <p>
+          Fatura do Cartão de Crédito / Gastos Variáveis (Lazer, Roupa,
+          Delivery):
+        </p>
+        <input type="number" id="marketing" placeholder="Ex: 800" />
+
+        <p>Dívidas / Parcelas fixas ativas (Se houver):</p>
+        <input type="number" id="impostos" placeholder="Ex: 0" /><br /><br />
+
+        <button type="button" onclick="passoAnterior(2)">Voltar</button>
+        <button type="button" onclick="proximoPasso(4)">Avançar</button>
+      </section>
+
+      <section
+        class="passo-formulario"
+        id="passo-4"
+        style="display: none"
+        aria-label="Passo 4"
+      >
+        <h2>Passo 4: Seus Objetivos</h2>
+        <p>O que você quer comprar/conquistar? (Meta):</p>
+        <input
+          type="text"
+          id="nomeMeta"
+          placeholder="Ex: Trocar de Moto / PC Novo"
+        />
+
+        <p>Quanto custa esse objetivo? (R$):</p>
+        <input type="number" id="precoAlvoMeta" placeholder="Ex: 8000" />
+
+        <p>Em quantos meses você quer conquistar isso?:</p>
+        <input type="number" id="prazoMeta" placeholder="Ex: 10" /><br /><br />
+
+        <button type="button" onclick="passoAnterior(3)">Voltar</button>
+        <button type="button" onclick="finalizarSetup()">
+          Gerar Meu Painel Pessoal
+        </button>
+      </section>
+    </section>
+
+    <!-- Dashboard -->
+    <section
+      id="tela-dashboard"
+      style="display: none"
+      aria-label="Dashboard financeiro"
+    >
+      <header class="header-fixo">
+        <div class="header-left">
+          <div
+            class="logo-container"
+            onclick="trocarTela('dashboard')"
+            role="button"
+            tabindex="0"
+            aria-label="Voltar ao painel"
+            onkeydown="
+              if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                trocarTela('dashboard');
+              }
+            "
+          >
+            <img src="logo.svg" alt="Logo" class="logo" />
+          </div>
+          <h1>Meu Painel</h1>
+        </div>
+        <div class="header-right">
+          <select id="acoesRapidas" onchange="dispararAcao()">
+            <option value="" disabled selected>Ações Rápidas...</option>
+            <option value="atualizar">Atualizar Renda/Gasto Atual</option>
+            <option value="despesa-extra">Adicionar Despesa Extra/Única</option>
+          </select>
+          <select id="nav-select" onchange="trocarTela(this.value)">
+            <option value="dashboard">Painel Financeiro</option>
+            <option value="laboratorio">Laboratório Dev</option>
+            <option value="gerenciamento">Gerenciamento de Dados</option>
+            <option value="historico">Histórico de Transações</option>
+          </select>
+        </div>
+      </header>
+      <main class="conteudo-sistema" id="painel-financeiro">
+        <div class="card card-runway" id="card-runway">
+          <h2>Runway</h2>
+          <div
+            id="runway-content"
+            style="
+              font-size: 2rem;
+              font-weight: bold;
+              color: var(--green);
+              margin: 12px 0;
+            "
+          >
+            —
+          </div>
+          <p
+            id="runway-desc"
+            style="color: var(--muted); margin: 0; font-size: 0.9rem"
+          >
+            Tempo até esgotar recursos
+          </p>
+        </div>
+
+        <div class="card" id="card-resumo">
+          <h2>Resumo</h2>
+          <p id="resumo-text">Carregando dados...</p>
+          <div id="status-alert" class="status-badge">—</div>
+        </div>
+
+        <div class="card" id="card-disponivel">
+          <h3>Disponível</h3>
+          <ul id="disponivel-list"></ul>
+        </div>
+
+        <div class="card" id="card-balanco">
+          <h3>Balanço Mensal</h3>
+          <div id="balanco-content">
+            <div>Entradas: <strong id="bal-entradas">—</strong></div>
+            <div>Saídas: <strong id="bal-saidas">—</strong></div>
+            <div>Net Burn: <strong id="bal-netburn">—</strong></div>
+          </div>
+          <div style="margin-top: 12px">
+            <div><em>Detalhes:</em></div>
+            <div>
+              <ul id="entradas-list"></ul>
+            </div>
+            <div>
+              <ul id="saidas-list"></ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" id="card-objetivo">
+          <h3>Objetivo</h3>
+          <div id="objetivo-content"></div>
+        </div>
+
+        <div class="card">
+          <h3>Dados brutos (JSON)</h3>
+          <pre
+            id="json-raw"
+            style="white-space: pre-wrap; word-break: break-word"
+          >
+—</pre
+          >
+        </div>
+      </main>
+
+      <main
+        class="conteudo-sistema sandbox-shell"
+        id="tela-laboratorio"
+        style="display: none"
+      >
+        <section class="card sandbox-intro">
+          <h2>Laboratório Dev</h2>
+          <p>
+            Ambiente de testes dinâmico para mini-simuladores, exercícios de
+            lógica e ideias de programação.
+          </p>
+        </section>
+        <div id="grid-laboratorio" class="grid-sandbox"></div>
+      </main>
+
+      <main
+        class="conteudo-sistema"
+        id="tela-gerenciamento"
+        style="display: none"
+      >
+        <section class="card">
+          <h2>Gerenciamento de Dados</h2>
+          <p>
+            Edite diretamente o estado salvo (JSON). Tenha cuidado ao alterar.
+          </p>
+          <textarea
+            id="gerenciamento-json"
+            style="
+              width: 100%;
+              min-height: 200px;
+              background: rgba(0, 0, 0, 0.25);
+              color: var(--text);
+              border: 1px solid rgba(255, 255, 255, 0.04);
+              padding: 12px;
+              border-radius: 8px;
+            "
+          ></textarea>
+          <div
+            style="margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap"
+          >
+            <button onclick="salvarGerenciamento()">Salvar JSON</button>
+            <button class="btn-secondary" onclick="fecharModais()">
+              Fechar
+            </button>
+          </div>
+        </section>
+      </main>
+
+      <main class="conteudo-sistema" id="tela-historico" style="display: none">
+        <section class="card">
+          <h2>Histórico de Transações</h2>
+          <p>Lista de despesas extras e eventos registrados.</p>
+          <ul
+            id="historico-list"
+            style="max-height: 420px; overflow: auto; padding-left: 16px"
+          ></ul>
+        </section>
+      </main>
+    </section>
+
+    <div id="modal-atualizar" class="modal-backdrop" style="display: none">
+      <div class="modal-card">
+        <h3>Atualizar base de renda e custos</h3>
+        <label for="input-salario-base">Salário</label>
+        <input id="input-salario-base" type="number" min="0" step="0.01" />
+        <label for="input-custos-base">Custos Fixos</label>
+        <input id="input-custos-base" type="number" min="0" step="0.01" />
+        <div class="modal-actions">
+          <button type="button" onclick="salvarAtualizacaoBase()">
+            Salvar Alterações
+          </button>
+          <button type="button" class="btn-secondary" onclick="fecharModais()">
+            Cancelar
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div id="modal-despesa" class="modal-backdrop" style="display: none">
+      <div class="modal-card">
+        <h3>Adicionar despesa extra</h3>
+        <label for="input-nome-despesa">Nome da despesa</label>
+        <input
+          id="input-nome-despesa"
+          type="text"
+          placeholder="Ex.: Viagem, presente, reparo"
+        />
+        <label for="input-valor-despesa">Valor (R$)</label>
+        <input id="input-valor-despesa" type="number" min="0" step="0.01" />
+        <div class="modal-actions">
+          <button type="button" onclick="adicionarDespesaExtra()">
+            Adicionar
+          </button>
+          <button type="button" class="btn-secondary" onclick="fecharModais()">
+            Cancelar
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script src="script.js" defer></script>
+  </body>
+</html>
